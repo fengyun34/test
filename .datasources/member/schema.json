@@ -1,0 +1,28 @@
+
+{
+  "name": "member",
+  "title": "团队成员",
+  "schemas": [
+    {
+      "name": "name",
+      "title": "成员姓名",
+      "type": "String"
+    },
+    {
+      "name": "email",
+      "title": "邮箱地址",
+      "type": "Email"
+    },
+    {
+      "name": "role",
+      "title": "角色",
+      "type": "String"
+    },
+    {
+      "name": "avatar",
+      "title": "头像",
+      "type": "Image"
+    }
+  ]
+}
+  

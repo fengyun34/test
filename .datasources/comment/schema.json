@@ -1,0 +1,28 @@
+
+{
+  "name": "comment",
+  "title": "任务评论",
+  "schemas": [
+    {
+      "name": "taskId",
+      "title": "任务ID",
+      "type": "String"
+    },
+    {
+      "name": "authorId",
+      "title": "作者ID",
+      "type": "String"
+    },
+    {
+      "name": "content",
+      "title": "评论内容",
+      "type": "String"
+    },
+    {
+      "name": "parentCommentId",
+      "title": "父评论ID",
+      "type": "String"
+    }
+  ]
+}
+  

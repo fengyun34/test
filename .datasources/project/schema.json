@@ -1,0 +1,45 @@
+
+{
+  "name": "project",
+  "title": "项目",
+  "schemas": [
+    {
+      "name": "name",
+      "title": "项目名称",
+      "type": "String"
+    },
+    {
+      "name": "description",
+      "title": "项目描述",
+      "type": "String"
+    },
+    {
+      "name": "ownerId",
+      "title": "负责人ID",
+      "type": "String"
+    },
+    {
+      "name": "status",
+      "title": "项目状态",
+      "type": "String"
+    },
+    {
+      "name": "progress",
+      "title": "项目进度",
+      "type": "Number"
+    },
+    {
+      "name": "startDate",
+      "title": "开始日期",
+      "type": "Date",
+      "format": "date"
+    },
+    {
+      "name": "endDate",
+      "title": "结束日期",
+      "type": "Date",
+      "format": "date"
+    }
+  ]
+}
+  

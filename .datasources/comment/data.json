@@ -1,0 +1,49 @@
+
+[
+  {
+    "_id": "comment_001",
+    "taskId": "task_001",
+    "authorId": "user_002",
+    "content": "已完成注册功能的基本实现，正在进行最后的测试",
+    "parentCommentId": null,
+    "createdAt": 1726300800000,
+    "updatedAt": 1726300800000
+  },
+  {
+    "_id": "comment_002",
+    "taskId": "task_001",
+    "authorId": "user_001",
+    "content": "测试用例已经准备好，请尽快安排测试",
+    "parentCommentId": null,
+    "createdAt": 1726387200000,
+    "updatedAt": 1726387200000
+  },
+  {
+    "_id": "comment_003",
+    "taskId": "task_002",
+    "authorId": "user_002",
+    "content": "注册表单的前端验证已完成，后端验证接口需要联调",
+    "parentCommentId": null,
+    "createdAt": 1726473600000,
+    "updatedAt": 1726473600000
+  },
+  {
+    "_id": "comment_004",
+    "taskId": "task_004",
+    "authorId": "user_003",
+    "content": "商品列表接口已完成开发，等待前端联调",
+    "parentCommentId": null,
+    "createdAt": 1726560000000,
+    "updatedAt": 1726560000000
+  },
+  {
+    "_id": "comment_005",
+    "taskId": "task_010",
+    "authorId": "user_004",
+    "content": "柱状图组件已开发完成，支持自定义颜色和动画效果",
+    "parentCommentId": null,
+    "createdAt": 1726646400000,
+    "updatedAt": 1726646400000
+  }
+]
+  

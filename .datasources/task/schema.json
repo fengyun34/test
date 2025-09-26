@@ -1,0 +1,60 @@
+
+{
+  "name": "task",
+  "title": "任务",
+  "schemas": [
+    {
+      "name": "projectId",
+      "title": "项目ID",
+      "type": "String"
+    },
+    {
+      "name": "parentTaskId",
+      "title": "父任务ID",
+      "type": "String"
+    },
+    {
+      "name": "title",
+      "title": "任务标题",
+      "type": "String"
+    },
+    {
+      "name": "description",
+      "title": "任务描述",
+      "type": "String"
+    },
+    {
+      "name": "assigneeId",
+      "title": "负责人ID",
+      "type": "String"
+    },
+    {
+      "name": "reporterId",
+      "title": "报告人ID",
+      "type": "String"
+    },
+    {
+      "name": "priority",
+      "title": "优先级",
+      "type": "String"
+    },
+    {
+      "name": "status",
+      "title": "任务状态",
+      "type": "String"
+    },
+    {
+      "name": "startDate",
+      "title": "开始日期",
+      "type": "Date",
+      "format": "date"
+    },
+    {
+      "name": "dueDate",
+      "title": "截止日期",
+      "type": "Date",
+      "format": "date"
+    }
+  ]
+}
+  

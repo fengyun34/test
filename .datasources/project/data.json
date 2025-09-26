@@ -1,0 +1,52 @@
+
+[
+  {
+    "_id": "1",
+    "name": "电商平台重构",
+    "description": "基于微服务架构的电商平台重构项目",
+    "ownerId": "user_001",
+    "status": "active",
+    "progress": 75,
+    "startDate": "2024-08-01",
+    "endDate": "2024-12-31",
+    "createdAt": 1725129600000,
+    "updatedAt": 1725129600000
+  },
+  {
+    "_id": "2",
+    "name": "移动APP开发",
+    "description": "iOS和Android双端原生应用开发",
+    "ownerId": "user_002",
+    "status": "active",
+    "progress": 45,
+    "startDate": "2024-09-01",
+    "endDate": "2025-02-15",
+    "createdAt": 1725216000000,
+    "updatedAt": 1725216000000
+  },
+  {
+    "_id": "3",
+    "name": "数据分析平台",
+    "description": "企业级数据分析和可视化平台",
+    "ownerId": "user_003",
+    "status": "paused",
+    "progress": 30,
+    "startDate": "2024-07-15",
+    "endDate": "2025-01-30",
+    "createdAt": 1725302400000,
+    "updatedAt": 1725302400000
+  },
+  {
+    "_id": "4",
+    "name": "客户管理系统",
+    "description": "CRM系统升级与功能扩展",
+    "ownerId": "user_004",
+    "status": "completed",
+    "progress": 100,
+    "startDate": "2024-06-01",
+    "endDate": "2024-10-15",
+    "createdAt": 1725388800000,
+    "updatedAt": 1725388800000
+  }
+]
+  
