@@ -17,6 +17,8 @@ export default function CreateProjectPage(props) {
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [initialTasks, setInitialTasks] = useState([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [countdown, setCountdown] = useState(0);
+  const [darkMode, setDarkMode] = useState(false);
   const {
     toast
   } = useToast();
@@ -35,20 +37,39 @@ export default function CreateProjectPage(props) {
   }, []);
   const fetchMembers = async () => {
     try {
-      const result = await $w.cloud.callDataSource({
-        dataSourceName: 'member',
-        methodName: 'wedaGetRecordsV2',
-        params: {
-          select: {
-            $master: true
-          }
+      const result = await $w.cloud.callFunction({
+        name: 'projectService',
+        data: {
+          action: 'getMembers'
         }
       });
-      if (result.records) {
-        setMembers(result.records);
+      if (result.success && result.data) {
+        setMembers(result.data);
       }
     } catch (error) {
       console.error('获取成员失败:', error);
+      // 使用模拟数据作为后备
+      setMembers([{
+        _id: '1',
+        name: '张三',
+        role: '前端开发',
+        avatar: ''
+      }, {
+        _id: '2',
+        name: '李四',
+        role: '后端开发',
+        avatar: ''
+      }, {
+        _id: '3',
+        name: '王五',
+        role: '产品经理',
+        avatar: ''
+      }, {
+        _id: '4',
+        name: '赵六',
+        role: 'UI设计师',
+        avatar: ''
+      }]);
     }
   };
   const handleNext = () => {
@@ -64,7 +85,7 @@ export default function CreateProjectPage(props) {
   const handleCreateProject = async data => {
     setLoading(true);
     try {
-      // 创建项目
+      // 准备项目数据
       const projectData = {
         name: data.name,
         description: data.description,
@@ -74,56 +95,44 @@ export default function CreateProjectPage(props) {
         endDate: data.endDate,
         teamSize: selectedMembers.length,
         progress: 0,
+        teamMembers: selectedMembers.map(m => m._id),
+        initialTasks: initialTasks.map(task => ({
+          title: task.title,
+          description: task.description || '',
+          assigneeId: task.assigneeId || null
+        })),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
-      const projectResult = await $w.cloud.callDataSource({
-        dataSourceName: 'project',
-        methodName: 'wedaCreateV2',
-        params: {
-          data: projectData
+
+      // 调用云函数创建项目
+      const result = await $w.cloud.callFunction({
+        name: 'projectService',
+        data: {
+          action: 'createProject',
+          project: projectData
         }
       });
-      if (projectResult.id) {
-        // 创建初始任务
-        if (initialTasks.length > 0) {
-          const taskPromises = initialTasks.map(task => $w.cloud.callDataSource({
-            dataSourceName: 'task',
-            methodName: 'wedaCreateV2',
-            params: {
-              data: {
-                title: task.title,
-                description: task.description || '',
-                projectId: projectResult.id,
-                status: 'todo',
-                priority: 'medium',
-                assigneeId: task.assigneeId || null,
-                startDate: data.startDate,
-                dueDate: data.endDate,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-              }
-            }
-          }));
-          await Promise.all(taskPromises);
-        }
+      if (result.success) {
         toast({
           title: '项目创建成功',
-          description: '项目已成功创建，正在跳转到详情页...'
+          description: '项目已成功创建，正在跳转到项目列表...'
         });
+
+        // 跳转到项目列表页
         setTimeout(() => {
           $w.utils.navigateTo({
-            pageId: 'project-detail',
-            params: {
-              id: projectResult.id
-            }
+            pageId: 'projects',
+            params: {}
           });
         }, 1500);
+      } else {
+        throw new Error(result.message || '创建项目失败');
       }
     } catch (error) {
       toast({
         title: '创建失败',
-        description: error.message,
+        description: error.message || '创建项目时发生错误',
         variant: 'destructive'
       });
     } finally {

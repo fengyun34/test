@@ -29,6 +29,11 @@
       "type": "Number"
     },
     {
+      "name": "priority",
+      "title": "优先级",
+      "type": "String"
+    },
+    {
       "name": "startDate",
       "title": "开始日期",
       "type": "Date",
@@ -39,6 +44,19 @@
       "title": "结束日期",
       "type": "Date",
       "format": "date"
+    },
+    {
+      "name": "teamMembers",
+      "title": "团队成员",
+      "type": "Array",
+      "items": {
+        "type": "String"
+      }
+    },
+    {
+      "name": "teamSize",
+      "title": "团队规模",
+      "type": "Number"
     }
   ]
 }

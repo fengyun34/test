@@ -7,8 +7,11 @@
     "ownerId": "user_001",
     "status": "active",
     "progress": 75,
+    "priority": "high",
     "startDate": "2024-08-01",
     "endDate": "2024-12-31",
+    "teamMembers": ["user_001", "user_002", "user_003"],
+    "teamSize": 3,
     "createdAt": 1725129600000,
     "updatedAt": 1725129600000
   },
@@ -19,8 +22,11 @@
     "ownerId": "user_002",
     "status": "active",
     "progress": 45,
+    "priority": "medium",
     "startDate": "2024-09-01",
     "endDate": "2025-02-15",
+    "teamMembers": ["user_002", "user_004", "user_005"],
+    "teamSize": 3,
     "createdAt": 1725216000000,
     "updatedAt": 1725216000000
   },
@@ -31,8 +37,11 @@
     "ownerId": "user_003",
     "status": "paused",
     "progress": 30,
+    "priority": "high",
     "startDate": "2024-07-15",
     "endDate": "2025-01-30",
+    "teamMembers": ["user_003", "user_008", "user_009"],
+    "teamSize": 3,
     "createdAt": 1725302400000,
     "updatedAt": 1725302400000
   },
@@ -43,8 +52,11 @@
     "ownerId": "user_004",
     "status": "completed",
     "progress": 100,
+    "priority": "low",
     "startDate": "2024-06-01",
     "endDate": "2024-10-15",
+    "teamMembers": ["user_004", "user_005", "user_006"],
+    "teamSize": 3,
     "createdAt": 1725388800000,
     "updatedAt": 1725388800000
   }
