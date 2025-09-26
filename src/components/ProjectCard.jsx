@@ -1,9 +1,9 @@
 // @ts-ignore;
 import React from 'react';
 // @ts-ignore;
-import { Card, CardContent, CardHeader, CardTitle, Badge, Progress, Avatar, AvatarFallback, AvatarImage } from '@/components/ui';
+import { Card, CardContent, CardHeader, CardTitle, Badge, Avatar, AvatarFallback, AvatarImage, Progress } from '@/components/ui';
 // @ts-ignore;
-import { Calendar, Users, Clock } from 'lucide-react';
+import { Calendar, Users, Clock, TrendingUp, MoreVertical } from 'lucide-react';
 
 export function ProjectCard({
   project,
@@ -33,48 +33,107 @@ export function ProjectCard({
         return '未知';
     }
   };
-  return <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => onClick(project.id)}>
-          <CardHeader>
-            <div className="flex justify-between items-start">
-              <CardTitle className="text-lg">{project.name}</CardTitle>
-              <Badge className={getStatusColor(project.status)}>
-                {getStatusText(project.status)}
+  const getPriorityColor = priority => {
+    switch (priority) {
+      case 'high':
+        return 'bg-red-500';
+      case 'medium':
+        return 'bg-yellow-500';
+      case 'low':
+        return 'bg-green-500';
+      default:
+        return 'bg-gray-500';
+    }
+  };
+  const getPriorityText = priority => {
+    switch (priority) {
+      case 'high':
+        return '高优先级';
+      case 'medium':
+        return '中优先级';
+      case 'low':
+        return '低优先级';
+      default:
+        return '未设置';
+    }
+  };
+  // 安全地处理可能为空的值
+  const safeProject = {
+    name: project?.name || '未命名项目',
+    description: project?.description || '暂无描述',
+    status: project?.status || 'active',
+    priority: project?.priority || 'medium',
+    progress: project?.progress || 0,
+    startDate: project?.startDate || '2024-01-01',
+    endDate: project?.endDate || '2024-12-31',
+    teamSize: project?.teamSize || 0,
+    teamMembers: project?.teamMembers || [],
+    tasks: project?.tasks || [],
+    completedTasks: project?.completedTasks || 0,
+    totalTasks: project?.totalTasks || 0
+  };
+  return <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={onClick}>
+      <CardHeader>
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className="text-lg mb-2">{safeProject.name}</CardTitle>
+            <div className="flex space-x-2">
+              <Badge className={getStatusColor(safeProject.status)}>
+                {getStatusText(safeProject.status)}
+              </Badge>
+              <Badge variant="outline" className={getPriorityColor(safeProject.priority)}>
+                {getPriorityText(safeProject.priority)}
               </Badge>
             </div>
-            <p className="text-sm text-muted-foreground mt-2">{project.description}</p>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between text-sm mb-2">
-                  <span>进度</span>
-                  <span>{project.progress}%</span>
-                </div>
-                <Progress value={project.progress} className="h-2" />
-              </div>
-              
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center space-x-2">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>{project.deadline}</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                  <span>{project.memberCount}人</span>
-                </div>
-              </div>
+          </div>
+          <button className="text-gray-400 hover:text-gray-600">
+            <MoreVertical className="h-4 w-4" />
+          </button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+          {safeProject.description}
+        </p>
 
-              <div className="flex items-center space-x-2">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={project.owner.avatar} />
-                  <AvatarFallback>{project.owner.name[0]}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="text-sm font-medium">{project.owner.name}</p>
-                  <p className="text-xs text-muted-foreground">负责人</p>
-                </div>
-              </div>
+        <div className="space-y-4">
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>项目进度</span>
+              <span>{safeProject.progress}%</span>
             </div>
-          </CardContent>
-        </Card>;
+            <Progress value={safeProject.progress} className="h-2" />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="flex items-center">
+              <Calendar className="h-4 w-4 mr-2 text-gray-400" />
+              <span>{safeProject.startDate}</span>
+            </div>
+            <div className="flex items-center">
+              <Clock className="h-4 w-4 mr-2 text-gray-400" />
+              <span>{safeProject.endDate}</span>
+            </div>
+            <div className="flex items-center">
+              <Users className="h-4 w-4 mr-2 text-gray-400" />
+              <span>{safeProject.teamSize} 人</span>
+            </div>
+            <div className="flex items-center">
+              <TrendingUp className="h-4 w-4 mr-2 text-gray-400" />
+              <span>{safeProject.completedTasks}/{safeProject.totalTasks} 任务</span>
+            </div>
+          </div>
+
+          {safeProject.teamMembers && safeProject.teamMembers.length > 0 && <div className="flex -space-x-2">
+              {safeProject.teamMembers.slice(0, 4).map((member, index) => <Avatar key={index} className="h-8 w-8 border-2 border-white">
+                  <AvatarImage src={member.avatar || ''} />
+                  <AvatarFallback>{member.name ? member.name.charAt(0) : '?'}</AvatarFallback>
+                </Avatar>)}
+              {safeProject.teamMembers.length > 4 && <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-600 border-2 border-white">
+                  +{safeProject.teamMembers.length - 4}
+                </div>}
+            </div>}
+        </div>
+      </CardContent>
+    </Card>;
 }
