@@ -269,22 +269,6 @@ export default function LoginPage(props) {
             </div>
           </CardContent>
         </Card>
-
-        {/* 技术标签 */}
-        <div className="flex justify-center space-x-2 mt-6">
-          <div className="border-cyan-500/30 text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full text-xs flex items-center">
-            <Zap className="h-3 w-3 mr-1" />
-            实时同步
-          </div>
-          <div className="border-purple-500/30 text-purple-400 bg-purple-500/10 px-3 py-1 rounded-full text-xs flex items-center">
-            <Shield className="h-3 w-3 mr-1" />
-            企业级安全
-          </div>
-          <div className="border-pink-500/30 text-pink-400 bg-pink-500/10 px-3 py-1 rounded-full text-xs flex items-center">
-            <Sparkles className="h-3 w-3 mr-1" />
-            AI 驱动
-          </div>
-        </div>
       </div>
 
       {/* 添加CSS动画 */}
