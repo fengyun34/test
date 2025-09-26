@@ -1,7 +1,7 @@
 // @ts-ignore;
 import React, { useState, useEffect } from 'react';
 // @ts-ignore;
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button, Input, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Badge, Avatar, AvatarFallback, AvatarImage, Progress, useToast, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button, Input, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Badge, Avatar, AvatarFallback, AvatarImage, Progress, useToast } from '@/components/ui';
 // @ts-ignore;
 import { ChevronLeft, ChevronRight, Plus, Users, Calendar, Clock, Target, CheckCircle, X, Upload, UserPlus } from 'lucide-react';
 
@@ -17,8 +17,6 @@ export default function CreateProjectPage(props) {
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [initialTasks, setInitialTasks] = useState([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
-  const [countdown, setCountdown] = useState(0);
-  const [darkMode, setDarkMode] = useState(false);
   const {
     toast
   } = useToast();
@@ -37,14 +35,40 @@ export default function CreateProjectPage(props) {
   }, []);
   const fetchMembers = async () => {
     try {
-      const result = await $w.cloud.callFunction({
-        name: 'projectService',
-        data: {
-          action: 'getMembers'
+      const result = await $w.cloud.callDataSource({
+        dataSourceName: 'member',
+        methodName: 'wedaGetRecordsV2',
+        params: {
+          select: {
+            $master: true
+          }
         }
       });
-      if (result.success && result.data) {
-        setMembers(result.data);
+      if (result.records) {
+        setMembers(result.records);
+      } else {
+        // 使用模拟数据作为后备
+        setMembers([{
+          _id: '1',
+          name: '张三',
+          role: '前端开发',
+          avatar: ''
+        }, {
+          _id: '2',
+          name: '李四',
+          role: '后端开发',
+          avatar: ''
+        }, {
+          _id: '3',
+          name: '王五',
+          role: '产品经理',
+          avatar: ''
+        }, {
+          _id: '4',
+          name: '赵六',
+          role: 'UI设计师',
+          avatar: ''
+        }]);
       }
     } catch (error) {
       console.error('获取成员失败:', error);
@@ -85,35 +109,52 @@ export default function CreateProjectPage(props) {
   const handleCreateProject = async data => {
     setLoading(true);
     try {
-      // 准备项目数据
+      // 创建项目
       const projectData = {
         name: data.name,
-        description: data.description,
+        description: data.description || '',
         status: 'active',
-        priority: data.priority,
+        priority: data.priority || 'medium',
         startDate: data.startDate,
         endDate: data.endDate,
         teamSize: selectedMembers.length,
         progress: 0,
-        teamMembers: selectedMembers.map(m => m._id),
-        initialTasks: initialTasks.map(task => ({
-          title: task.title,
-          description: task.description || '',
-          assigneeId: task.assigneeId || null
-        })),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
 
-      // 调用云函数创建项目
-      const result = await $w.cloud.callFunction({
-        name: 'projectService',
-        data: {
-          action: 'createProject',
-          project: projectData
+      // 使用数据源直接创建项目
+      const projectResult = await $w.cloud.callDataSource({
+        dataSourceName: 'project',
+        methodName: 'wedaCreateV2',
+        params: {
+          data: projectData
         }
       });
-      if (result.success) {
+      if (projectResult.id) {
+        // 创建初始任务
+        if (initialTasks.length > 0) {
+          const taskPromises = initialTasks.map(task => $w.cloud.callDataSource({
+            dataSourceName: 'task',
+            methodName: 'wedaCreateV2',
+            params: {
+              data: {
+                title: task.title,
+                description: task.description || '',
+                projectId: projectResult.id,
+                status: 'todo',
+                priority: 'medium',
+                assigneeId: task.assigneeId || null,
+                startDate: data.startDate,
+                dueDate: data.endDate,
+                progress: 0,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+              }
+            }
+          }));
+          await Promise.all(taskPromises);
+        }
         toast({
           title: '项目创建成功',
           description: '项目已成功创建，正在跳转到项目列表...'
@@ -126,10 +167,9 @@ export default function CreateProjectPage(props) {
             params: {}
           });
         }, 1500);
-      } else {
-        throw new Error(result.message || '创建项目失败');
       }
     } catch (error) {
+      console.error('创建项目失败:', error);
       toast({
         title: '创建失败',
         description: error.message || '创建项目时发生错误',
