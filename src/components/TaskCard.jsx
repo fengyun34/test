@@ -1,9 +1,9 @@
 // @ts-ignore;
 import React from 'react';
 // @ts-ignore;
-import { Card, Badge, Avatar, AvatarFallback, AvatarImage } from '@/components/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Badge } from '@/components/ui';
 // @ts-ignore;
-import { Clock, MessageSquare, Paperclip } from 'lucide-react';
+import { Clock, User, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 export function TaskCard({
   task,
@@ -24,49 +24,52 @@ export function TaskCard({
   const getStatusColor = status => {
     switch (status) {
       case 'todo':
-        return 'border-l-gray-400';
-      case 'in_progress':
-        return 'border-l-blue-400';
-      case 'review':
-        return 'border-l-yellow-400';
-      case 'done':
-        return 'border-l-green-400';
+        return 'bg-gray-500';
+      case 'in-progress':
+        return 'bg-blue-500';
+      case 'completed':
+        return 'bg-green-500';
       default:
-        return 'border-l-gray-400';
+        return 'bg-gray-500';
     }
   };
-  return <Card className={`p-4 border-l-4 ${getStatusColor(task.status)} hover:shadow-md transition-shadow cursor-pointer`} onClick={() => onClick(task)}>
-          <div className="space-y-3">
-            <div className="flex justify-between items-start">
-              <h4 className="font-medium">{task.title}</h4>
-              <Badge className={getPriorityColor(task.priority)} variant="secondary">
-                {task.priority}
-              </Badge>
-            </div>
-            
-            <p className="text-sm text-muted-foreground line-clamp-2">{task.description}</p>
-            
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-1">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span>{task.dueDate}</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                  <span>{task.commentCount}</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Paperclip className="h-4 w-4 text-muted-foreground" />
-                  <span>{task.attachmentCount}</span>
-                </div>
-              </div>
-              
-              <Avatar className="h-6 w-6">
-                <AvatarImage src={task.assignee.avatar} />
-                <AvatarFallback>{task.assignee.name[0]}</AvatarFallback>
-              </Avatar>
-            </div>
+  const getStatusText = status => {
+    switch (status) {
+      case 'todo':
+        return '待办';
+      case 'in-progress':
+        return '进行中';
+      case 'completed':
+        return '已完成';
+      default:
+        return status;
+    }
+  };
+  return <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={onClick}>
+      <CardHeader>
+        <div className="flex justify-between items-start">
+          <CardTitle className="text-base">{task.title}</CardTitle>
+          <div className="flex gap-2">
+            <Badge className={getPriorityColor(task.priority)}>
+              {task.priority === 'high' ? '高' : task.priority === 'medium' ? '中' : '低'}
+            </Badge>
+            <Badge className={getStatusColor(task.status)}>
+              {getStatusText(task.status)}
+            </Badge>
           </div>
-        </Card>;
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2 text-sm text-gray-600">
+          <div className="flex items-center">
+            <User className="h-4 w-4 mr-2" />
+            <span>负责人: {task.assignee}</span>
+          </div>
+          <div className="flex items-center">
+            <Clock className="h-4 w-4 mr-2" />
+            <span>截止日期: {task.dueDate}</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>;
 }
