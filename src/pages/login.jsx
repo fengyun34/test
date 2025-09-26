@@ -1,179 +1,67 @@
 // @ts-ignore;
 import React, { useState, useEffect } from 'react';
 // @ts-ignore;
-import { Button, Input, Card, CardContent, CardDescription, CardHeader, CardTitle, Checkbox, Label, useToast, Separator } from '@/components/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button, Input, useToast, Badge } from '@/components/ui';
 // @ts-ignore;
-import { Eye, EyeOff, Mail, Lock, MessageCircle, Smartphone, User, Sun, Moon, Users, QrCode } from 'lucide-react';
+import { Eye, EyeOff, Sparkles, Zap, Shield, User, Lock, ChevronRight, Github, Chrome, Mail } from 'lucide-react';
 
 export default function LoginPage(props) {
   const {
     $w
   } = props;
+  const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [loginMethod, setLoginMethod] = useState('password'); // 'password' | 'wechat' | 'sms'
-  const [phone, setPhone] = useState('');
-  const [smsCode, setSmsCode] = useState('');
-  const [countdown, setCountdown] = useState(0);
-  const [darkMode, setDarkMode] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [particles, setParticles] = useState([]);
+  const [mousePosition, setMousePosition] = useState({
+    x: 0,
+    y: 0
+  });
   const {
     toast
   } = useToast();
   useEffect(() => {
-    const savedEmail = localStorage.getItem('rememberedEmail');
-    const savedPassword = localStorage.getItem('rememberedPassword');
-    if (savedEmail && savedPassword) {
-      setEmail(savedEmail);
-      setPassword(savedPassword);
-      setRememberMe(true);
-    }
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setDarkMode(prefersDark);
+    // 生成粒子效果
+    const newParticles = Array.from({
+      length: 50
+    }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 3 + 1,
+      speed: Math.random() * 2 + 0.5,
+      opacity: Math.random() * 0.5 + 0.2
+    }));
+    setParticles(newParticles);
+    // 鼠标移动效果
+    const handleMouseMove = e => {
+      setMousePosition({
+        x: e.clientX / window.innerWidth,
+        y: e.clientY / window.innerHeight
+      });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    document.documentElement.classList.toggle('dark');
-  };
-  const handlePasswordLogin = async e => {
+  const handleLogin = async e => {
     e.preventDefault();
     if (!email || !password) {
       toast({
-        title: '输入错误',
-        description: '请填写邮箱和密码',
-        variant: 'destructive'
-      });
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const mockUsers = [{
-        email: 'admin@example.com',
-        password: 'admin123',
-        name: '管理员',
-        role: '项目经理'
-      }, {
-        email: 'user@example.com',
-        password: 'user123',
-        name: '普通用户',
-        role: '前端开发'
-      }, {
-        email: 'demo',
-        password: 'demo123',
-        name: '演示用户',
-        role: 'demo'
-      }];
-      const user = mockUsers.find(u => (u.email === email || u.name === email) && u.password === password);
-      if (user) {
-        if (rememberMe) {
-          localStorage.setItem('rememberedEmail', email);
-          localStorage.setItem('rememberedPassword', password);
-          localStorage.setItem('rememberMe', 'true');
-        } else {
-          localStorage.removeItem('rememberedEmail');
-          localStorage.removeItem('rememberedPassword');
-          localStorage.removeItem('rememberMe');
-        }
-        localStorage.setItem('currentUser', JSON.stringify({
-          id: Date.now().toString(),
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          avatar: `https://images.unsplash.com/photo-${Date.now()}?w=64&h=64&fit=crop&crop=face`
-        }));
-        toast({
-          title: '登录成功',
-          description: `欢迎回来，${user.name}！`
-        });
-        setTimeout(() => {
-          $w.utils.navigateTo({
-            pageId: 'projects',
-            params: {}
-          });
-        }, 1000);
-      } else {
-        toast({
-          title: '登录失败',
-          description: '邮箱或密码错误',
-          variant: 'destructive'
-        });
-      }
-    } catch (error) {
-      toast({
         title: '登录失败',
-        description: error.message,
-        variant: 'destructive'
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  const handleWeChatLogin = async () => {
-    setIsLoading(true);
-    try {
-      // 模拟微信登录流程
-      toast({
-        title: '微信登录',
-        description: '正在跳转到微信登录...'
-      });
-
-      // 模拟微信扫码登录成功
-      setTimeout(() => {
-        const wechatUser = {
-          id: 'wechat_' + Date.now(),
-          email: 'wechat_user@example.com',
-          name: '微信用户',
-          role: '用户',
-          avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=64&h=64&fit=crop&crop=face'
-        };
-        localStorage.setItem('currentUser', JSON.stringify(wechatUser));
-        toast({
-          title: '微信登录成功',
-          description: '欢迎使用微信登录！'
-        });
-        setTimeout(() => {
-          $w.utils.navigateTo({
-            pageId: 'projects',
-            params: {}
-          });
-        }, 1000);
-      }, 2000);
-    } catch (error) {
-      toast({
-        title: '微信登录失败',
-        description: error.message,
-        variant: 'destructive'
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  const handleSMSLogin = async e => {
-    e.preventDefault();
-    if (!phone || !smsCode) {
-      toast({
-        title: '输入错误',
-        description: '请填写手机号和验证码',
+        description: '请输入邮箱和密码',
         variant: 'destructive'
       });
       return;
     }
-    setIsLoading(true);
+    setLoading(true);
     try {
-      // 模拟短信登录
-      const smsUser = {
-        id: 'sms_' + Date.now(),
-        email: phone + '@sms.com',
-        name: '手机用户',
-        role: '用户',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop&crop=face'
-      };
-      localStorage.setItem('currentUser', JSON.stringify(smsUser));
+      // 模拟登录逻辑
+      await new Promise(resolve => setTimeout(resolve, 1500));
       toast({
-        title: '短信登录成功',
-        description: '欢迎使用手机登录！'
+        title: '登录成功',
+        description: '正在跳转到项目列表...',
+        className: 'bg-green-500 text-white border-green-500'
       });
       setTimeout(() => {
         $w.utils.navigateTo({
@@ -183,186 +71,177 @@ export default function LoginPage(props) {
       }, 1000);
     } catch (error) {
       toast({
-        title: '短信登录失败',
-        description: error.message,
+        title: '登录失败',
+        description: error.message || '请检查您的登录信息',
         variant: 'destructive'
       });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
-  const sendSMSCode = () => {
-    if (!phone) {
-      toast({
-        title: '请输入手机号',
-        description: '请先输入正确的手机号码',
-        variant: 'destructive'
-      });
-      return;
-    }
-    setCountdown(60);
-    const timer = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+  const handleSocialLogin = provider => {
     toast({
-      title: '验证码已发送',
-      description: '验证码已发送到您的手机'
+      title: `${provider} 登录`,
+      description: `正在通过 ${provider} 登录...`
     });
   };
-  const handleRegister = () => {
-    $w.utils.navigateTo({
-      pageId: 'register',
-      params: {}
-    });
-  };
-  const handleForgotPassword = () => {
-    $w.utils.navigateTo({
-      pageId: 'forgot-password',
-      params: {}
-    });
-  };
-  return <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300`}>
-      <div className="absolute top-4 right-4">
-        <Button variant="ghost" size="icon" onClick={toggleDarkMode} className="rounded-full">
-          {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-        </Button>
+  return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-purple-950 to-slate-900 relative overflow-hidden">
+      {/* 动态背景粒子 */}
+      <div className="absolute inset-0">
+        {particles.map(particle => <div key={particle.id} className="absolute rounded-full bg-cyan-400 animate-pulse" style={{
+        left: `${particle.x}%`,
+        top: `${particle.y}%`,
+        width: `${particle.size}px`,
+        height: `${particle.size}px`,
+        opacity: particle.opacity,
+        animation: `float ${particle.speed}s ease-in-out infinite`,
+        animationDelay: `${Math.random() * 2}s`
+      }} />)}
       </div>
 
-      <Card className="w-full max-w-md mx-4">
-        <CardHeader className="space-y-1">
-          <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
-              <Users className="w-8 h-8 text-white" />
-            </div>
-          </div>
-          <CardTitle className="text-2xl text-center">欢迎回来</CardTitle>
-          <CardDescription className="text-center">
-            选择您的登录方式
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {/* 登录方式选择 */}
-          <div className="flex space-x-2 mb-6">
-            <Button variant={loginMethod === 'password' ? 'default' : 'outline'} className="flex-1" onClick={() => setLoginMethod('password')}>
-              密码登录
-            </Button>
-            <Button variant={loginMethod === 'wechat' ? 'default' : 'outline'} className="flex-1" onClick={() => setLoginMethod('wechat')}>
-              微信登录
-            </Button>
-            <Button variant={loginMethod === 'sms' ? 'default' : 'outline'} className="flex-1" onClick={() => setLoginMethod('sms')}>
-              短信登录
-            </Button>
-          </div>
+      {/* 网格背景 */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,theme(colors.cyan.500/0.1)_1px,transparent_1px),linear-gradient(to_bottom,theme(colors.cyan.500/0.1)_1px,transparent_1px)] bg-[size:50px_50px]" />
 
-          {/* 密码登录 */}
-          {loginMethod === 'password' && <form onSubmit={handlePasswordLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">邮箱或用户名</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input id="email" type="text" placeholder="admin@example.com" value={email} onChange={e => setEmail(e.target.value)} className="pl-10" required />
+      {/* 发光效果 */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{
+      animationDelay: '1s'
+    }} />
+
+      {/* 主登录卡片 */}
+      <div className="relative z-10 w-full max-w-md mx-4">
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-lg blur opacity-75 animate-pulse" />
+        <Card className="relative bg-slate-900/80 backdrop-blur-xl border-slate-800/50">
+          <CardHeader className="space-y-1">
+            <div className="flex items-center justify-center mb-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full blur opacity-50 animate-pulse" />
+                <div className="relative w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center">
+                  <Sparkles className="h-8 w-8 text-white" />
                 </div>
               </div>
-
+            </div>
+            <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+              项目管理系统
+            </CardTitle>
+            <CardDescription className="text-center text-slate-400">
+              欢迎来到未来工作空间
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="password">密码</Label>
+                <label className="text-sm font-medium text-slate-300 flex items-center">
+                  <Mail className="h-4 w-4 mr-2 text-cyan-400" />
+                  邮箱地址
+                </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="pl-10 pr-10" required />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  <Input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" className="bg-slate-800/50 border-slate-700 text-slate-200 placeholder-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20" />
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <User className="h-4 w-4 text-slate-500" />
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300 flex items-center">
+                  <Lock className="h-4 w-4 mr-2 text-cyan-400" />
+                  密码
+                </label>
+                <div className="relative">
+                  <Input type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" className="bg-slate-800/50 border-slate-700 text-slate-200 placeholder-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20" />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                    {showPassword ? <EyeOff className="h-4 w-4 text-slate-500 hover:text-cyan-400 transition-colors" /> : <Eye className="h-4 w-4 text-slate-500 hover:text-cyan-400 transition-colors" />}
                   </button>
                 </div>
               </div>
-
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="remember" checked={rememberMe} onCheckedChange={checked => setRememberMe(checked)} />
-                  <Label htmlFor="remember" className="text-sm">记住我</Label>
-                </div>
-                <Button type="button" variant="link" className="text-sm px-0" onClick={handleForgotPassword}>
+                <label className="flex items-center space-x-2 text-sm text-slate-400">
+                  <input type="checkbox" className="rounded border-slate-600 bg-slate-800 text-cyan-500 focus:ring-cyan-500/20" />
+                  <span>记住我</span>
+                </label>
+                <a href="#" className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors">
                   忘记密码？
-                </Button>
+                </a>
               </div>
-
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? <>
+              <Button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-semibold shadow-lg shadow-cyan-500/25">
+                {loading ? <div className="flex items-center justify-center">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                     登录中...
-                  </> : '登录'}
+                  </div> : <div className="flex items-center justify-center">
+                    <Shield className="h-4 w-4 mr-2" />
+                    安全登录
+                  </div>}
               </Button>
-            </form>}
+            </form>
 
-          {/* 微信登录 */}
-          {loginMethod === 'wechat' && <div className="space-y-4">
-              <div className="text-center space-y-4">
-                <div className="w-32 h-32 mx-auto bg-gray-100 rounded-lg flex items-center justify-center">
-                  <QrCode className="w-16 h-16 text-gray-400" />
-                </div>
-                <p className="text-sm text-gray-600">请使用微信扫描二维码登录</p>
-                <Button onClick={handleWeChatLogin} className="w-full bg-green-600 hover:bg-green-700" disabled={isLoading}>
-                  {isLoading ? <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                      登录中...
-                    </> : <>
-                      <MessageCircle className="w-4 h-4 mr-2" />
-                      微信一键登录
-                    </>}
-                </Button>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-700" />
               </div>
-            </div>}
-
-          {/* 短信登录 */}
-          {loginMethod === 'sms' && <form onSubmit={handleSMSLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="phone">手机号</Label>
-                <div className="relative">
-                  <Smartphone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input id="phone" type="tel" placeholder="13800138000" value={phone} onChange={e => setPhone(e.target.value)} className="pl-10" required />
-                </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-slate-900 px-2 text-slate-400">或使用以下方式</span>
               </div>
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="smsCode">验证码</Label>
-                <div className="flex space-x-2">
-                  <div className="relative flex-1">
-                    <Input id="smsCode" type="text" placeholder="123456" value={smsCode} onChange={e => setSmsCode(e.target.value)} maxLength={6} required />
-                  </div>
-                  <Button type="button" variant="outline" onClick={sendSMSCode} disabled={countdown > 0}>
-                    {countdown > 0 ? `${countdown}秒后重试` : '获取验证码'}
-                  </Button>
-                </div>
-              </div>
-
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                    登录中...
-                  </> : '短信登录'}
+            <div className="grid grid-cols-2 gap-3">
+              <Button type="button" variant="outline" onClick={() => handleSocialLogin('GitHub')} className="bg-slate-800/50 border-slate-700 hover:bg-slate-700/50 hover:border-slate-600 text-slate-300">
+                <Github className="h-4 w-4 mr-2" />
+                GitHub
               </Button>
-            </form>}
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              还没有账户？{' '}
-              <Button type="button" variant="link" className="px-1" onClick={handleRegister}>
-                立即注册
+              <Button type="button" variant="outline" onClick={() => handleSocialLogin('Google')} className="bg-slate-800/50 border-slate-700 hover:bg-slate-700/50 hover:border-slate-600 text-slate-300">
+                <Chrome className="h-4 w-4 mr-2" />
+                Google
               </Button>
-            </p>
-          </div>
+            </div>
 
-          <div className="mt-4 text-center">
-            <p className="text-xs text-gray-500">
-              演示账户：demo / demo123 或 admin@example.com / admin123
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+            <div className="mt-6 text-center">
+              <p className="text-sm text-slate-400">
+                还没有账号？{' '}
+                <a href="#" className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors">
+                  立即注册
+                </a>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 技术标签 */}
+        <div className="flex justify-center space-x-2 mt-6">
+          <Badge variant="outline" className="border-cyan-500/30 text-cyan-400 bg-cyan-500/10">
+            <Zap className="h-3 w-3 mr-1" />
+            实时同步
+          </Badge>
+          <Badge variant="outline" className="border-purple-500/30 text-purple-400 bg-purple-500/10">
+            <Shield className="h-3 w-3 mr-1" />
+            企业级安全
+          </Badge>
+          <Badge variant="outline" className="border-pink-500/30 text-pink-400 bg-pink-500/10">
+            <Sparkles className="h-3 w-3 mr-1" />
+            AI 驱动
+          </Badge>
+        </div>
+      </div>
+
+      {/* 添加CSS动画 */}
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px) translateX(0px);
+          }
+          33% {
+            transform: translateY(-10px) translateX(5px);
+          }
+          66% {
+            transform: translateY(5px) translateX(-5px);
+          }
+        }
+        
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      `}</style>
     </div>;
 }
